@@ -199,7 +199,7 @@ The postgres software has been installed. Create a database table called tasks t
 
 ![https://miro.medium.com/v2/resize:fit:1920/1*9Qi4MWbwKw-DMFFcQCcPrQ.png](https://miro.medium.com/v2/resize:fit:1920/1*9Qi4MWbwKw-DMFFcQCcPrQ.png)
 
-![https://miro.medium.com/v2/resize:fit:868/1*YO4kj0uv1gZlSJRg6bdDwg.png](https://miro.medium.com/v2/resize:fit:868/1*YO4kj0uv1gZlSJRg6bdDwg.png)
+
 
 ## **Installing dependencies**
 
