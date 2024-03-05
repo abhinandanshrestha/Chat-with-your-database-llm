@@ -4,17 +4,6 @@ In this tutorial, we will be connecting to PostgreSQL database and initiating a 
 
 # **Getting Started**
 
-## **Table of contents**
-
-- [Introduction to LangChain](https://coinsbench.com/chat-with-your-databases-using-langchain-bb7d31ed2e76#0103)
-- [Why use LangChain](https://coinsbench.com/chat-with-your-databases-using-langchain-bb7d31ed2e76#ccee)
-- [LangChain Structure](https://coinsbench.com/chat-with-your-databases-using-langchain-bb7d31ed2e76#e1fe)
-- [Applications of LangChain](https://coinsbench.com/chat-with-your-databases-using-langchain-bb7d31ed2e76#4311)
-- [Creating a question answering app using LangChain](https://coinsbench.com/chat-with-your-databases-using-langchain-bb7d31ed2e76#5a64)
-- [Creating a simple LLM call using LangChain](https://coinsbench.com/chat-with-your-databases-using-langchain-bb7d31ed2e76#8915)
-- [Creating a prompt template](https://coinsbench.com/chat-with-your-databases-using-langchain-bb7d31ed2e76#4f26)
-- [Interacting with databases using LangChain](https://coinsbench.com/chat-with-your-databases-using-langchain-bb7d31ed2e76#28cc)
-
 ## **Introduction to LangChain**
 
 LangChain is an open-source library that offers developers a comprehensive set of resources to develop applications that run on Large Language Models (LLMs) by establishing a mechanism for linking LLMs to external data sources, such as personal documents or the internet. Developers can utilize LangChain to string together a sequence of commands to create sophisticated applications. In short, LangChain serves as a framework that enables the execution of a series of prompts to attain a specific outcome.
@@ -62,15 +51,16 @@ In the last section we covered basic understanding of LangChain. In the followin
 - Create and activate a virtual environment by executing the following command.
 
 ```
-python -m venv venv
-source venv/bin/activate #for ubuntu
-venv/Scripts/activate #for windows
+python -m venv myvenv
+source myvenv/bin/activate #for ubuntu
+myvenv/Scripts/activate #for windows
 ```
 
-- Install `langchain`,`openai` and `python-environ` libraries using pip.
+- Install libraries using pip.
 
 ```
-pip install langchain openai python-environ
+pip install streamlit langchain_openai langchain python-dotenv psycopg2-binary
+
 ```
 
 ## **Setting up environment variables**
@@ -97,10 +87,14 @@ Create a new python file `langchain_demo.py` and add the following code to it.
 from langchain.llms import OpenAI
 
 # Accessing the OPENAI KEY
-import environ
-env = environ.Env()
-environ.Env.read_env()
-API_KEY = env('OPENAI_API_KEY')
+from langchain_openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+# Load variables from .env file
+load_dotenv()
+
+API_KEY = os.getenv('OPENAI_API_KEY')
 
 # Simple LLM call Using LangChain
 llm = OpenAI(model_name="text-davinci-003", openai_api_key=API_KEY)
@@ -127,13 +121,14 @@ You will get the output as follows.
 Create a new python file `langchain_demo.py` and add the following code to it.
 
 ```
-from langchain.llms import OpenAI
+from langchain_openai import OpenAI
+import os
+from dotenv import load_dotenv
 
-# Accessing the OPENAI KEY
-import environ
-env = environ.Env()
-environ.Env.read_env()
-API_KEY = env('OPENAI_API_KEY')
+# Load variables from .env file
+load_dotenv()
+
+API_KEY = os.getenv('OPENAI_API_KEY')
 
 # Creating a prompt template and running the LLM chain
 from langchain import PromptTemplate, LLMChain
@@ -219,123 +214,57 @@ venv/Scripts/activate #for windows
 - Install `langchain`,`openai`, `python-environ` and `psycopg2` libraries using pip.
 
 ```
-pip install langchain openai python-environ psycopg2
+pip install streamlit langchain_openai langchain python-dotenv psycopg2-binary
 ```
 
-## **Create tables and insert data**
-
-Create a new python file `db.py` and add the following code to it.
-
-```
-import psycopg2
-
-import environ
-env = environ.Env()
-environ.Env.read_env()
-
-# Establish a connection to the PostgreSQL database
-conn = psycopg2.connect(
-    host='localhost',
-    port=5432,
-    user='postgres',
-    password=env('DBPASS'),
-    database=env('DATABASE')
-)
-
-# Create a cursor object to execute SQL commands
-cursor = conn.cursor()
-
-# Create the tasks table if it doesn't exist
-cursor.execute('''CREATE TABLE IF NOT EXISTS tasks
-             (id SERIAL PRIMARY KEY,
-             task TEXT NOT NULL,
-             completed BOOLEAN,
-             due_date DATE,
-             completion_date DATE,
-             priority INTEGER)''')
-
-# Insert sample tasks into the tasks table
-cursor.execute("INSERT INTO tasks (task, completed, due_date, completion_date, priority) VALUES (%s, %s, %s, %s, %s)",
-               ('Complete the web page design', True, '2023-05-01', '2023-05-03', 1))
-cursor.execute("INSERT INTO tasks (task, completed, due_date, completion_date, priority) VALUES (%s, %s, %s, %s, %s)",
-               ('Create login and signup pages', True, '2023-05-03', '2023-05-05', 2))
-cursor.execute("INSERT INTO tasks (task, completed, due_date, completion_date, priority) VALUES (%s, %s, %s, %s, %s)",
-               ('Product management', False, '2023-05-05', None, 3))
-cursor.execute("INSERT INTO tasks (task, completed, due_date, completion_date, priority) VALUES (%s, %s, %s, %s, %s)",
-               ('Cart and wishlist creation', False, '2023-05-08', None, 4))
-cursor.execute("INSERT INTO tasks (task, completed, due_date, completion_date, priority) VALUES (%s, %s, %s, %s, %s)",
-               ('Payment gateway integration', False, '2023-05-10', None, 5))
-cursor.execute("INSERT INTO tasks (task, completed, due_date, completion_date, priority) VALUES (%s, %s, %s, %s, %s)",
-               ('Order management', False, '2023-05-10', None, 6))
-
-# Commit the changes and close the connection
-conn.commit()
-conn.close()
-```
-
-We have installed the `psycopg2` library and accessed environment variables `DBPASS` and `DATABASE` from the `.env` file. The `conn` object will establish a connection to the PostgreSQL database using `psycopg2.connect()` method. The SQL queries for creating the task table and inserting some values in it will be executed with the help of `cursor` object.
-
-## **Running script**
-
-To create the task table and insert values to it, run the `db.py` script using the following command.
-
-```
-python db.py
-```
 
 ## **Setup the SQL Database Chain**
 
 Create a new python file `app.py` and add the following code to it.
 
 ```
-from langchain import OpenAI, SQLDatabase, SQLDatabaseChain
+import streamlit as st
+from langchain_openai import OpenAI
+from langchain.sql_database import SQLDatabase
+from langchain_experimental.sql import SQLDatabaseChain
+import os
+from dotenv import load_dotenv
 
-import environ
-env = environ.Env()
-environ.Env.read_env()
+# Load variables from .env file
+load_dotenv()
 
-API_KEY = env('OPENAI_API_KEY')
+API_KEY = os.getenv('OPENAI_API_KEY')
+pwd=os.getenv('pass')
+usr=os.getenv('user')
+host=os.getenv('host')
+dbase=os.getenv('dbase')
 
 # Setup database
 db = SQLDatabase.from_uri(
-    f"postgresql+psycopg2://postgres:{env('DBPASS')}@localhost:5432/{env('DATABASE')}",
+    f"postgresql+psycopg2://{usr}:{pwd}@{host}:5432/{dbase}",
 )
 
 # setup llm
 llm = OpenAI(temperature=0, openai_api_key=API_KEY)
 
-# Create db chain
-QUERY = """
-Given an input question, first create a syntactically correct postgresql query to run, then look at the results of the query and return the answer.
-Use the following format:
+# Create db chain using from_llm class method
+db_chain = SQLDatabaseChain.from_llm(llm=llm, db=db, verbose=True)
 
-Question: Question here
-SQLQuery: SQL Query to run
-SQLResult: Result of the SQLQuery
-Answer: Final answer here
+# Streamlit UI layout
+st.title("Database Query Application")
 
-{question}
-"""
-
-# Setup the database chain
-db_chain = SQLDatabaseChain(llm=llm, database=db, verbose=True)
-
+# Define function to prompt user for input
 def get_prompt():
-    print("Type 'exit' to quit")
+    question = st.text_input("Enter your question:")
+    if question:
+        try:
+            st.write("Question:", question)
+            sql_result = db_chain.run(question)
+            st.write("SQL Result:", sql_result)
+        except Exception as e:
+            st.error(f"Error: {e}")
 
-    while True:
-        prompt = input("Enter a prompt: ")
-
-        if prompt.lower() == 'exit':
-            print('Exiting...')
-            break
-        else:
-            try:
-                question = QUERY.format(question=prompt)
-                print(db_chain.run(question))
-            except Exception as e:
-                print(e)
-
+# Execute the prompt function
 get_prompt()
 ```
 
@@ -357,9 +286,5 @@ python app.py
 ```
 
 You will get the output as follows,
-
-![https://miro.medium.com/v2/resize:fit:1100/1*MVKUoTX0c38L8mw1dXI8uA.png](https://miro.medium.com/v2/resize:fit:1100/1*MVKUoTX0c38L8mw1dXI8uA.png)
-
-![https://miro.medium.com/v2/resize:fit:1098/1*ywY3Sv13T10mqER3t31ilQ.png](https://miro.medium.com/v2/resize:fit:1098/1*ywY3Sv13T10mqER3t31ilQ.png)
-
+![alt text](Screenshot.png)![alt text](Terminal.png)
 There you have it! Your first langchain app in python :)
