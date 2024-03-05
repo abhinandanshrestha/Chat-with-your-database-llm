@@ -206,12 +206,12 @@ The postgres software has been installed. Create a database table called tasks t
 - Create and activate a virtual environment by executing the following command.
 
 ```
-python -m venv venv
-source venv/bin/activate #for ubuntu
-venv/Scripts/activate #for windows
+python -m venv myvenv
+source myvenv/bin/activate #for ubuntu
+myvenv/Scripts/activate #for windows
 ```
 
-- Install `langchain`,`openai`, `python-environ` and `psycopg2` libraries using pip.
+- Install libraries using pip.
 
 ```
 pip install streamlit langchain_openai langchain python-dotenv psycopg2-binary
@@ -267,15 +267,6 @@ def get_prompt():
 # Execute the prompt function
 get_prompt()
 ```
-
-**Understanding the code:**
-
-- Import `langchain` modules `OpenAI`, `SQLDatabase`, and `SQLDatabaseChain`
-- Access `OPENAI_API_KEY` from the environment variables file.
-- Setup the database connection using `SQLDatabase.from_uri()` method by specifying the connection URL.
-- Create `llm` object using `OpenAI()` by specifying the `temperature` and the `openai_api_key`.
-- Create the database chain object called `db_chain` using `SQLDatabaseChain()` by specifying the `llm` and `database` objects.
-- `get_prompt()` takes user input from the console and creates a query in the format by mentioning the question as an argument. It runs the SQL database chain using `db_chain.run()` method.
 
 ## **Runing the app**
 
